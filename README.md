@@ -1,6 +1,5 @@
-# Summer School Premaster Software Engineering 2015
-##Compilers and Term Rewriting (August 17-21)
-##Lab: Ogol
+##SSPMSE 2015: Compilers and Term Rewriting
+##Ogol lab
 **The labs take place between 13:00 and 17:00 in A1.04.**
 
 ### 1. Introduction
