@@ -1,4 +1,6 @@
-@doc{
+module ogol::Syntax
+
+/*
 
 Ogol syntax summary
 
@@ -35,7 +37,24 @@ Reserved keywords
 Bonus:
  - add literal for colors
  - support setpencolor
-}
-module ogol::Syntax
+
+*/
 
 start syntax Program = Command*; 
+
+layout Standard 
+  = WhitespaceOrComment* !>> [\ \t\n\r] !>> "-";
+  
+lexical WhitespaceOrComment 
+  = whitespace: Whitespace
+  | comment: Comment
+  ; 
+
+lexical Whitespace
+  = [\ \t\n\r]
+  ;
+
+lexical Comment
+  = @category="Comment" "--" ![\n\r]* $
+  ;  
+  
