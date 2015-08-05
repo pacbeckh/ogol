@@ -2,31 +2,31 @@
 
 Ogol syntax summary
 
-Program: list of command
+Program: Command...
 
 Command:
  * Control flow: 
   if Expr Block
   ifelse Expr Block Block
-  while Block Block
+  while Expr Block
   repeat Expr Block
- * Drawing
-  moving: forward Expr, back Expr 
-  turning: right Expr, left Expr, 
-  pen: pendown, penup, 
+ * Drawing (mind the closing semicolons)
+  forward Expr; fd Expr; back Expr; bk Expr; home;
+  right Expr; rt Expr; left Expr; lt Expr; 
+  pendown; pd; penup; pu;
  * Procedures
-  definition: to Name [Vars...] Command... end
+  definition: to Name [Var...] Command... end
   call: Name Expr... ;
  
-Block: [Command...]  
+Block: [Command...]
  
 Expressions
- * variables :x, :y, :angle etc.
- * number: 1, 2, -3 etc.
- * boolean: true, false
- * arithmetic: +, *, /, -
- * comparison: >, <, >=, <=, =, !=
- * logical: &&, ||
+ * Variables :x, :y, :angle, etc.
+ * Number: 1, 2, -3 etc.
+ * Boolean: true, false
+ * Arithmetic: +, *, /, -
+ * Comparison: >, <, >=, <=, =, !=
+ * Logical: &&, ||
 
 Reserved keywords
  if, ifelse, while, repeat, forward, back, right, left, pendown, 
@@ -35,7 +35,6 @@ Reserved keywords
 Bonus:
  - add literal for colors
  - support setpencolor
-
 }
 module ogol::Syntax
 
