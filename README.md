@@ -1,7 +1,7 @@
 # Summer School Premaster Software Engineering 2015
 ##Compilers and Term Rewriting (August 17-21)
 ##Lab: Ogol
-
+**The labs take place between 13:00 and 17:00 in A1.04.**
 
 ### 1. Introduction
 In the Master Software Engineering the creation and understanding of working software is highly valued. For the topic of compilers we make no exception. In the summer school we will thus spend quite a lot of lab-time applying theoretical concepts and creating (parts of) working compilers. The lab will focus on the language Ogol, which is like [Logo](https://en.wikipedia.org/wiki/UCBLogo), but without side-effects (among other features). We will be working within the Eclipse IDE with Rascal, and use GitHub as a base.
