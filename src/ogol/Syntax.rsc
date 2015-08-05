@@ -42,6 +42,20 @@ Bonus:
 
 start syntax Program = Command*; 
 
+
+syntax FunDef = /* todo */;
+
+syntax Expr = /* todo */;
+
+syntax Command = /* todo */;
+
+lexical VarId
+  = ":" [a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9];
+  
+lexical FunId
+  = [a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9];
+
+
 layout Standard 
   = WhitespaceOrComment* !>> [\ \t\n\r] !>> "-";
   
