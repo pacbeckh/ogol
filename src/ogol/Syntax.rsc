@@ -24,7 +24,7 @@ Block: [Command...]
  
 Expressions
  * Variables :x, :y, :angle, etc.
- * Number: 1, 2, -3 etc.
+ * Number: 1, 2, -3, 0.7, -.1, etc.
  * Boolean: true, false
  * Arithmetic: +, *, /, -
  * Comparison: >, <, >=, <=, =, !=
