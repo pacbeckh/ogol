@@ -14,7 +14,7 @@ bool canParse(cl, str expr){
 }
 
 bool canParseFile(loc l) {
-	return canParse(#Program, readFile(l));
+	return canParse(#start[Program], readFile(l));
 }
 
 //Comments
@@ -202,12 +202,12 @@ test bool callNeg4() = !canParse(#Command, "to 1;");
 
 
 //Files
-//test bool file1() = canParseFile(|project://Ogol/input/dashed.ogol|);
-//test bool file2() = canParseFile(|project://Ogol/input/octagon.ogol|);
-//test bool file3() = canParseFile(|project://Ogol/input/test.ogol|);
-//test bool file4() = canParseFile(|project://Ogol/input/trees.ogol|);
+test bool file1() = canParseFile(|project://Ogol/input/dashed.ogol|);
+test bool file2() = canParseFile(|project://Ogol/input/octagon.ogol|);
+test bool file3() = canParseFile(|project://Ogol/input/test.ogol|);
+test bool file4() = canParseFile(|project://Ogol/input/trees.ogol|);
 
-public void demo() = renderParsetree(parse(#Expr, "2+3*3"));
+public void demo() = renderParsetree(parse(#Expr, "-2.1.1"));
 
 
 

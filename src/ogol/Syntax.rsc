@@ -47,15 +47,10 @@ keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "pendown" | "pd" | "penup" | "pu" | "home"
 					| "to" | "true" | "false" | "end";
 
-
-syntax FunDef = /* todo */;
-
 lexical Boolean = "true" | "false";
 
-//TODO
-lexical Number = "-" [0-9]* Decimal?
-               | [0-9]+ Decimal?
-               | Decimal
+lexical Number = "-"? [0-9]+ Decimal?
+			   | "-"? Decimal
                ;
 lexical Decimal = "." [0-9]+;
 
