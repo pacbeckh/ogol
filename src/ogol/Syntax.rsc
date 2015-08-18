@@ -40,8 +40,7 @@ Bonus:
 
 */
 
-start syntax Program = Command*; 
-
+start syntax Program = Command* commands; 
 
 syntax FunDef = /* todo */;
 
