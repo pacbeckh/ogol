@@ -42,22 +42,78 @@ Bonus:
 
 start syntax Program = Command*; 
 
+keyword Reserved = "if" | "ifelse" | "while"| "repeat" 
+					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt" 
+					| "pendown" | "pd" | "penup" | "pu" | "home"
+					| "to" | "true" | "false" | "end";
+
 
 syntax FunDef = /* todo */;
 
-syntax Expr = /* todo */;
+lexical Boolean = "true" | "false";
 
-syntax Command = /* todo */;
+//TODO
+lexical Number = "-" [0-9]* Decimal?
+               | [0-9]+ Decimal?
+               | Decimal
+               ;               
+lexical Decimal = "." [0-9]+;
+
+
+syntax Expr = VarId 
+			| Number
+			| Boolean
+			| left Expr "/" Expr
+			> left Expr "*" Expr
+			> left (
+			     Expr "+" Expr
+			   | Expr "-" Expr
+			)
+			> left (
+					Expr "\>" Expr
+					| Expr "\<" Expr
+					| Expr "\>=" Expr
+					| Expr "\<=" Expr
+					| Expr "=" Expr
+					| Expr "!=" Expr
+			  )
+			> left (Expr "&&" Expr  
+					> Expr "||" Expr
+			  ) 
+			;
+
+
+syntax Command = 
+ /*Drawings*/	   ("left" | "lt") Expr ";"
+				 | ("right" | "rt") Expr ";"
+				 | ("forward" | "fd") Expr ";"
+				 | ("back" | "bk") Expr ";"
+				 | ("penup" | "pu") ";"
+				 | ("pendown" | "pd") ";"
+				 | "home" ";"
+/*Control flow*/ | "if" Expr Block
+				 | "ifelse" Expr Block Block
+				 | "while" Expr Block
+				 | "repeat" Expr Block
+/*Procedures*/	 | "to" FunId VarId* Command* "end"
+				 | call : FunId Expr* ";"
+				 ;
+
+				 
+syntax Block = "[" Command* "]";
+
+
+
 
 lexical VarId
-  = ":" [a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9];
+  = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
   
 lexical FunId
-  = [a-zA-Z][a-zA-Z0-9]* !>> [a-zA-Z0-9];
+  = ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9] ;
 
 
 layout Standard 
-  = WhitespaceOrComment* !>> [\ \t\n\r] !>> "-";
+  = WhitespaceOrComment* !>> [\ \t\n\r] !>> "--";
   
 lexical WhitespaceOrComment 
   = whitespace: Whitespace
