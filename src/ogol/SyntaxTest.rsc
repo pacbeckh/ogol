@@ -207,6 +207,8 @@ test bool file2() = canParseFile(|project://Ogol/input/octagon.ogol|);
 test bool file3() = canParseFile(|project://Ogol/input/test.ogol|);
 test bool file4() = canParseFile(|project://Ogol/input/trees.ogol|);
 
+test bool fileNeg1() = !canParseFile(|project://Ogol/input/pumpkin.ogol|);
+
 public void demo() = renderParsetree(parse(#Expr, "-2.1.1"));
 
 
