@@ -57,7 +57,7 @@ lexical FunId
 
 
 layout Standard 
-  = WhitespaceOrComment* !>> [\ \t\n\r] !>> "-";
+  = WhitespaceOrComment* !>> [\ \t\n\r] !>> "--";
   
 lexical WhitespaceOrComment 
   = whitespace: Whitespace
