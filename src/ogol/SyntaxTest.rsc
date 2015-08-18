@@ -8,7 +8,7 @@ import vis::Render;
 import IO;
 
 bool canParse(cl, str expr){
-	try 
+	try
 		return /amb(_) !:= parse(cl, expr);
 	catch: return false;
 }
@@ -52,9 +52,7 @@ test bool number7() = canParse(#Number, ".1");
 
 test bool numberNeg1() = !canParse(#Number, "0.");
 test bool numberNeg2() = !canParse(#Number, "");
-//test bool numberNeg3() = !canParse(#Number, "-");
-
-
+test bool numberNeg3() = !canParse(#Number, "-");
 
 
 //Expr
@@ -62,19 +60,15 @@ test bool numberNeg2() = !canParse(#Number, "");
 test bool arithmatic1() = canParse(#Expr, "1+1");
 test bool arithmatic2() = canParse(#Expr, "1 + 1");
 test bool arithmatic3() = canParse(#Expr, "1 + 2");
-//
-//test bool arithmatic4() = canParse(#Expr, " 1+2");
-//test bool arithmatic5() = canParse(#Expr, "1+2 ");
-test bool arithmatic6() = canParse(#Expr, "1+1+1");
-
-test bool arithmatic7() = canParse(#Expr, "1-2");
-test bool arithmatic8() = canParse(#Expr, "1*2");
-test bool arithmatic9() = canParse(#Expr, "1/2");
-test bool arithmatic10() = canParse(#Expr, "9-5+2");
-test bool arithmatic11() = canParse(#Expr, "9-5*2");
-test bool arithmatic12() = canParse(#Expr, "4*2/2*3");
-test bool arithmatic13() = canParse(#Expr, "8*-5");
-test bool arithmatic14() = canParse(#Expr, "1-false");
+test bool arithmatic4() = canParse(#Expr, "1+1+1");
+test bool arithmatic5() = canParse(#Expr, "1-2");
+test bool arithmatic6() = canParse(#Expr, "1*2");
+test bool arithmatic7() = canParse(#Expr, "1/2");
+test bool arithmatic8() = canParse(#Expr, "9-5+2");
+test bool arithmatic9() = canParse(#Expr, "9-5*2");
+test bool arithmatic10() = canParse(#Expr, "4*2/2*3");
+test bool arithmatic11() = canParse(#Expr, "8*-5");
+test bool arithmatic11() = canParse(#Expr, "1-false");
 
 //Expr
 // Comparison
@@ -94,7 +88,7 @@ test bool comparisonNeg2() = !canParse(#Expr, "1 \> = 1");
 test bool comparisonNeg3() = !canParse(#Expr, "1 \< = 1");
 test bool comparisonNeg4() = !canParse(#Expr, "1 =\< 1");
 test bool comparisonNeg5() = !canParse(#Expr, "1 =\> 1");
- 
+
 //Expr
 // Logical
 test bool logical1() = canParse(#Expr, "1 || 2");

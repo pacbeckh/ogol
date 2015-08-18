@@ -7,21 +7,21 @@ Ogol syntax summary
 Program: Command...
 
 Command:
- * Control flow: 
+ * Control flow:
   if Expr Block
   ifelse Expr Block Block
   while Expr Block
   repeat Expr Block
  * Drawing (mind the closing semicolons)
   forward Expr; fd Expr; back Expr; bk Expr; home;
-  right Expr; rt Expr; left Expr; lt Expr; 
+  right Expr; rt Expr; left Expr; lt Expr;
   pendown; pd; penup; pu;
  * Procedures
   definition: to Name [Var...] Command... end
   call: Name Expr... ;
- 
+
 Block: [Command...]
- 
+
 Expressions
  * Variables :x, :y, :angle, etc.
  * Number: 1, 2, -3, 0.7, -.1, etc.
@@ -31,7 +31,7 @@ Expressions
  * Logical: &&, ||
 
 Reserved keywords
- if, ifelse, while, repeat, forward, back, right, left, pendown, 
+ if, ifelse, while, repeat, forward, back, right, left, pendown,
  penup, to, true, false, end
 
 Bonus:
@@ -40,10 +40,10 @@ Bonus:
 
 */
 
-start syntax Program = Command*; 
+start syntax Program = Command*;
 
-keyword Reserved = "if" | "ifelse" | "while"| "repeat" 
-					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt" 
+keyword Reserved = "if" | "ifelse" | "while"| "repeat"
+					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"
 					| "pendown" | "pd" | "penup" | "pu" | "home"
 					| "to" | "true" | "false" | "end";
 
@@ -56,34 +56,33 @@ lexical Boolean = "true" | "false";
 lexical Number = "-" [0-9]* Decimal?
                | [0-9]+ Decimal?
                | Decimal
-               ;               
+               ;
 lexical Decimal = "." [0-9]+;
 
 
-syntax Expr = VarId 
+syntax Expr = VarId
 			| Number
 			| Boolean
 			| left Expr "/" Expr
 			> left Expr "*" Expr
 			> left (
-			     Expr "+" Expr
-			   | Expr "-" Expr
-			)
-			> left (
-					Expr "\>" Expr
-					| Expr "\<" Expr
-					| Expr "\>=" Expr
-					| Expr "\<=" Expr
-					| Expr "=" Expr
-					| Expr "!=" Expr
+			      Expr "+" Expr
+			    | Expr "-" Expr
 			  )
-			> left (Expr "&&" Expr  
-					> Expr "||" Expr
-			  ) 
+			> left (
+			      Expr "\>" Expr
+				| Expr "\<" Expr
+				| Expr "\>=" Expr
+				| Expr "\<=" Expr
+				| Expr "=" Expr
+				| Expr "!=" Expr
+			  )
+			> left Expr "&&" Expr
+			> left Expr "||" Expr
 			;
 
 
-syntax Command = 
+syntax Command =
  /*Drawings*/	   ("left" | "lt") Expr ";"
 				 | ("right" | "rt") Expr ";"
 				 | ("forward" | "fd") Expr ";"
@@ -99,26 +98,19 @@ syntax Command =
 				 | call : FunId Expr* ";"
 				 ;
 
-				 
 syntax Block = "[" Command* "]";
 
 
+lexical VarId = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
+lexical FunId = ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9] ;
 
 
-lexical VarId
-  = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
-  
-lexical FunId
-  = ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9] ;
+layout Standard = WhitespaceOrComment* !>> [\ \t\n\r] !>> "--";
 
-
-layout Standard 
-  = WhitespaceOrComment* !>> [\ \t\n\r] !>> "--";
-  
-lexical WhitespaceOrComment 
+lexical WhitespaceOrComment
   = whitespace: Whitespace
   | comment: Comment
-  ; 
+  ;
 
 lexical Whitespace
   = [\ \t\n\r]
@@ -126,5 +118,4 @@ lexical Whitespace
 
 lexical Comment
   = @category="Comment" "--" ![\n\r]* $
-  ;  
-  
+  ;
