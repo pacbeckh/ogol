@@ -1,0 +1,8 @@
+to squareDash :n :len
+   to dash :n :len
+      repeat :n [ pd; fd :len; pu; fd :len; ]
+      bk :len;
+      pd ;
+   end
+   repeat 4 [ dash :n :len; rt 90; ]
+end
