@@ -32,7 +32,7 @@ Expressions
 
 Reserved keywords
  if, ifelse, while, repeat, forward, back, right, left, pendown, 
- penup, to, true, false, end
+ penup, to, true, false, end, home
 
 Bonus:
  - add literal for colors
