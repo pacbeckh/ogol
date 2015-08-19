@@ -119,6 +119,14 @@ public State eval((Command)`ifelse <Expr e> <Block i> <Block j>`, FunEnv fenv, V
 	return b ? eval(i, fenv, venv, state) : eval(j, fenv, venv, state);
 }
 
+public State eval((Command)`repeat <Expr e> <Block b>`, FunEnv fenv, VarEnv venv, State state) {
+	number(n) = eval(e, venv);
+	for( _ <- [0..toInt(n)]) {
+		state = eval(b, fenv, venv, state);
+	};
+	return state;
+}
+
 public State eval((Command)`<FunDef f>`, FunEnv fenv, VarEnv venv, State state) {
 	return state;
 }
