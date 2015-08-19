@@ -7,6 +7,7 @@ import IO;
 import util::Math;
 import List;
 import Type;
+import ParseTree;
 
 alias FunEnv = map[FunId id, FunDef def];
 
@@ -40,10 +41,11 @@ alias Turtle = tuple[real dir, bool pendown, Point position];
 alias State = tuple[Turtle turtle, Canvas canvas];
 
 // Top-level eval function
-public Canvas eval(p:(Program)`<Commands cmds>`) {
+public Canvas evalProgram(p:(Program)`<Commands cmds>`) {
 	p = desugar(p);
 	funenv = collectFunDefs(p);
-	state = eval(cmds, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
+	println(unparse(p));
+	state = evalCommand(cmds, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
 	return state.canvas;
 }
 
@@ -70,76 +72,80 @@ FunEnv collectFunDefs(Program p) {
 	return (f.id : f | /FunDef f := p);
 }
 
-public State eval((Command)`<FunCall funCall>`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`<FunCall funCall>`, FunEnv fenv, VarEnv venv, State state) {
 	FunDef target = fenv[funCall.id];
 	venv = bind(funCall, target, venv);
-	state = eval(target.body, fenv, venv, state);
+	state = evalCommand(target.body, fenv, venv, state);
 	return state;
 }
 
 //Eval Command
-public State eval((Command)`penup;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`penup;`, FunEnv fenv, VarEnv venv, State state) {
 	return state.turtle.pendown = false;
 }
 
-public State eval((Command)`pendown;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`pendown;`, FunEnv fenv, VarEnv venv, State state) {
 	return state.turtle.pendown = true;
 }
 
-public State eval((Command)`right <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`right <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
 	return applyRotation(n, state);
 }
 
-public State eval((Command)`left <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`left <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
 	return applyRotation(-n, state);
 }
 
-public State eval((Command)`left <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`left <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
 	return applyRotation(-n, state);
 }
 
-public State eval((Command)`forward <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`forward <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
 	return applyMovement(n, state);
 }
-public State eval((Command)`back <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`back <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
 	return applyMovement(-n, state);
 }
 
-public State eval((Command)`home;`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`home;`, FunEnv fenv, VarEnv venv, State state) {
 	return state.turtle.position = <0.0,0.0>;
 }
 
-public State eval((Command)`ifelse <Expr e> <Block i> <Block j>`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`ifelse <Expr e> <Block i> <Block j>`, FunEnv fenv, VarEnv venv, State state) {
 	boolean(b) = eval(e, venv);
-	return b ? eval(i, fenv, venv, state) : eval(j, fenv, venv, state);
+	return b ? evalCommand(i, fenv, venv, state) : evalCommand(j, fenv, venv, state);
 }
 
-public State eval((Command)`repeat <Expr e> <Block b>`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`repeat <Expr e> <Block b>`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
 	for( _ <- [0..toInt(n)]) {
-		state = eval(b, fenv, venv, state);
+		state = evalCommand(b, fenv, venv, state);
 	};
 	return state;
 }
 
-public State eval((Command)`<FunDef f>`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Command)`<FunDef f>`, FunEnv fenv, VarEnv venv, State state) {
 	return state;
 }
 
-public State eval((Block)`[<Commands commands>]`, FunEnv fenv, VarEnv venv, State state) {
-	return eval(commands, fenv, venv, state);
+public State evalCommand((Block)`[<Commands commands>]`, FunEnv fenv, VarEnv venv, State state) {
+	return evalCommand(commands, fenv, venv, state);
 }
 
-public State eval((Commands) `<Command* cmds>`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommand((Commands) `<Command* cmds>`, FunEnv fenv, VarEnv venv, State state) {
 	for (Command c <- cmds) {
-		state = eval(c, fenv, venv, state);
+		state = evalCommand(c, fenv, venv, state);
 	};
 	return state;
+}
+
+public default State evalCommand((Command)`<Command c>`, FunEnv fenv, VarEnv venv, State state) {
+	throw "Could not eval command: <c>";
 }
 
 State applyMovement(real distance, State state) {

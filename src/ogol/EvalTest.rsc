@@ -20,6 +20,10 @@ test bool desugarPenDown() = testDesugar((Program)`pd;`, (Program)`pendown;`);
 test bool desugarPenUp() = testDesugar((Program)`pu;`, (Program)`penup;`);
 test bool desugarIf() = testDesugar((Program)`if 1 [ fd 1; ]`, (Program)`ifelse 1 [forward 1;] []`);
 
+test bool desugarBlock() = testDesugar((Program)`repeat 4 [ rt 10;]`, (Program)`repeat 4 [ right 10;]`);
+test bool desugarFunction() = testDesugar(
+  (Program)`to squareDashTrirl :n repeat 36 [squareDash :n :n; rt 10;] end`, 
+  (Program)`to squareDashTrirl :n repeat 36 [squareDash :n :n; right 10;] end`);
 //Expr
 //  VarId
 test bool evalVarId1() = eval((Expr)`:t`, ((VarId)`:t`: number(10.0))) == number(10.0);
@@ -86,23 +90,23 @@ public State baseState(real direction, bool pendown, Point position, Canvas canv
 }
 
 //Commands
-test bool evalPenUp1() = eval((Command)`penup;`, (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
-test bool evalPenUp2() = eval((Command)`penup;`, (), (), baseState(0.0,true, <0.0,0.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
+test bool evalPenUp1() = evalCommand((Command)`penup;`, (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
+test bool evalPenUp2() = evalCommand((Command)`penup;`, (), (), baseState(0.0,true, <0.0,0.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
 
-test bool evalPenDown1() = eval((Command)`pendown;`, (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,true,<0.0,0.0>>, []>;
-test bool evalPenDown2() = eval((Command)`pendown;`, (), (), baseState(0.0,true, <0.0,0.0>, [])) == <<0.0,true,<0.0,0.0>>, []>;
+test bool evalPenDown1() = evalCommand((Command)`pendown;`, (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,true,<0.0,0.0>>, []>;
+test bool evalPenDown2() = evalCommand((Command)`pendown;`, (), (), baseState(0.0,true, <0.0,0.0>, [])) == <<0.0,true,<0.0,0.0>>, []>;
 
-test bool evalRight1() = eval((Command)`right 100;`, (), (), baseState(266.0,false, <0.0,0.0>, [])) == <<6.0,false,<0.0,0.0>>, []>;
-test bool evalRight2() = eval((Command)`right -80;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<300.0,false,<0.0,0.0>>, []>;
-test bool evalRight3() = eval((Command)`right 20;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<40.0,false,<0.0,0.0>>, []>;
+test bool evalRight1() = evalCommand((Command)`right 100;`, (), (), baseState(266.0,false, <0.0,0.0>, [])) == <<6.0,false,<0.0,0.0>>, []>;
+test bool evalRight2() = evalCommand((Command)`right -80;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<300.0,false,<0.0,0.0>>, []>;
+test bool evalRight3() = evalCommand((Command)`right 20;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<40.0,false,<0.0,0.0>>, []>;
 
-test bool evalLeft1() = eval((Command)`left 100;`, (), (), baseState(266.0,false, <0.0,0.0>, [])) == <<166.0,false,<0.0,0.0>>, []>;
-test bool evalLeft2() = eval((Command)`left -80;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<100.0,false,<0.0,0.0>>, []>;
-test bool evalLeft3() = eval((Command)`left 40;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<340.0,false,<0.0,0.0>>, []>;
-test bool evalLeft4() = eval((Command)`left 180;`, (), (), baseState(180.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
+test bool evalLeft1() = evalCommand((Command)`left 100;`, (), (), baseState(266.0,false, <0.0,0.0>, [])) == <<166.0,false,<0.0,0.0>>, []>;
+test bool evalLeft2() = evalCommand((Command)`left -80;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<100.0,false,<0.0,0.0>>, []>;
+test bool evalLeft3() = evalCommand((Command)`left 40;`, (), (), baseState(20.0,false, <0.0,0.0>, [])) == <<340.0,false,<0.0,0.0>>, []>;
+test bool evalLeft4() = evalCommand((Command)`left 180;`, (), (), baseState(180.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
 
 bool evalPosition(Command c, State input, State expected) {
-	State out = eval(c, (),(), input);
+	State out = evalCommand(c, (),(), input);
 	println(out.turtle.position);
 	println(expected.turtle.position);
 	return round(out.turtle.position.x, 0.1) == expected.turtle.position.x &&
@@ -114,7 +118,7 @@ test bool evalForward2() = evalPosition((Command)`forward -100;`, baseState(0.0,
 test bool evalForward3() = evalPosition((Command)`forward 100;`, baseState(90.0,false, <0.0,0.0>, []), <<90.0,false,<100.0, 0.0>>, []>);
 test bool evalForward4() = evalPosition((Command)`forward -100;`, baseState(90.0,false, <0.0,0.0>, []), <<90.0,false,<-100.0, 0.0>>, []>);
 test bool evalForward5() = evalPosition((Command)`forward 100;`, baseState(225.0,false, <50.0,20.0>, []), <<90.0,false,<-20.7, -50.7>>, []>);
-test bool evalForwardLine1() = eval((Command)`forward 100;`,() ,(), baseState(0.0,true, <0.0,0.0>, [])) ==  <<0.0,true,<0.0,100.0>>, [line(<0.0,0.0>,<0.0,100.0>)]>;
+test bool evalForwardLine1() = evalCommand((Command)`forward 100;`,() ,(), baseState(0.0,true, <0.0,0.0>, [])) ==  <<0.0,true,<0.0,100.0>>, [line(<0.0,0.0>,<0.0,100.0>)]>;
 
 
 test bool evalBack1() = evalPosition((Command)`back -100;`, baseState(0.0,false, <0.0,0.0>, []), <<0.0,false,<0.0,100.0>>, []>);
@@ -123,11 +127,11 @@ test bool evalBack3() = evalPosition((Command)`back -100;`, baseState(90.0,false
 test bool evalBack4() = evalPosition((Command)`back 100;`, baseState(90.0,false, <0.0,0.0>, []), <<90.0,false,<-100.0, 0.0>>, []>);
 test bool evalBack5() = evalPosition((Command)`back -100;`, baseState(225.0,false, <50.0,20.0>, []), <<90.0,false,<-20.7, -50.7>>, []>);
 
-test bool evalHome() = eval((Command)`home;`, (), (), baseState(0.0,false, <10.0,10.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
+test bool evalHome() = evalCommand((Command)`home;`, (), (), baseState(0.0,false, <10.0,10.0>, [])) == <<0.0,false,<0.0,0.0>>, []>;
 
 
-test bool evalIfElse1() = eval((Command)`ifelse true [forward 100;] [ back 100;]` , (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,100.0>>, []>;
-test bool evalIfElse2() = eval((Command)`ifelse false [forward 100;] [ back 100;]` , (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,-100.0>>, []>;
+test bool evalIfElse1() = evalCommand((Command)`ifelse true [forward 100;] [ back 100;]` , (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,100.0>>, []>;
+test bool evalIfElse2() = evalCommand((Command)`ifelse false [forward 100;] [ back 100;]` , (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,-100.0>>, []>;
 
 
 
