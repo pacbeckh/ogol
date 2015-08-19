@@ -3,21 +3,19 @@ module ogol::NameAnalysis
 import ogol::Syntax;
 import ParseTree;
 
-alias Definitions = lrel[str varName, str scopeName, int varPos];
 
-alias Uses = rel[str varName, loc src, str scopeName, int varPos];
+// Combined scope and name analysis for Ogol
 
-Uses main(list[value] args){
-    Program p = parse(#start[Program], |project://Ogol/input/dashed_nested.ogol|).top;
-    return varsUsedInCommands("global", p.commands, []);
-}
+alias Definitions = lrel[str varName, str scopeName, int varPos]; // variable definitions
 
-// Variables used in a sequnce of commands
+alias Uses = rel[str varName, loc src, str scopeName, int varPos];// variable uses
+
+// Find variables that are used in a sequence of commands
 
 Uses varsUsedInCommands(str scopeName, Command* commands, Definitions defs) =
    { *varsUsedInCommand(scopeName, cmd, defs) | cmd <- commands };
 
-// Variables used in a single command
+// Find variables used in a single command -- function declaration
 
 Uses varsUsedInCommand(str scopeName,  (Command) `to <FunId fid> <VarId* args> <Command* commands> end`, Definitions defs){
     innerScope = "<scopeName>/<fid>";
@@ -29,8 +27,12 @@ Uses varsUsedInCommand(str scopeName,  (Command) `to <FunId fid> <VarId* args> <
     return varsUsedInCommands(innerScope, commands, defs);
 }
 
+// Find variables used in a single command -- block
+
 Uses varsUsedInCommand(str scopeName,  (Block) `[<Command* commands>]`, Definitions defs) =
     varsUsedInCommands(scopeName, commands, defs);
+
+// Find variables used in a single command -- other
 
 default Uses varsUsedInCommand(str scopeName, Command command, Definitions defs) {
     uses = {};
@@ -42,4 +44,11 @@ default Uses varsUsedInCommand(str scopeName, Command command, Definitions defs)
                uses += <"<varid>", varid@\loc, "***undefined***", -1>;
    };
    return uses;
+}
+
+// Try an example
+
+Uses main(list[value] args){
+    Program p = parse(#start[Program], |project://Ogol/input/dashed_nested.ogol|).top;
+    return varsUsedInCommands("global", p.commands, []);
 }
