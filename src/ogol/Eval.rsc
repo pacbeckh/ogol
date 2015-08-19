@@ -6,6 +6,7 @@ import String;
 import IO;
 import util::Math;
 import List;
+import Type;
 
 alias FunEnv = map[FunId id, FunDef def];
 
@@ -39,15 +40,10 @@ alias Turtle = tuple[real dir, bool pendown, Point position];
 alias State = tuple[Turtle turtle, Canvas canvas];
 
 // Top-level eval function
-Canvas eval(p:(Program)`<Command* cmds>`) {
+public Canvas eval(p:(Program)`<Commands cmds>`) {
+	p = desugar(p);
 	funenv = collectFunDefs(p);
-	varEnv = ();
-	state = <<0.0, true,  <0.0,0.0>>,[]>;
-	
-	for (c <- cmds) {
-		state = eval(c, funenv, varEnv, state);
-	}
-	
+	state = eval(cmds, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
 	return state.canvas;
 }
 
@@ -74,17 +70,10 @@ FunEnv collectFunDefs(Program p) {
 	return (f.id : f | /FunDef f := p);
 }
 
-public State eval((Command)`<FunId funId> <Expr* args>;`, FunEnv fenv, VarEnv venv, State state) {
-	FunDef target = fenv[funId];
-	
-	//TODO Dynamic
-	
-	
-	venv = venv + ((VarId)`:x` : number(50.0), (VarId)`:y` : number(90.0));
-	println(venv);
-	for (cmd <- target.body) {
-		state = eval(cmd, fenv, venv, state);
-	};
+public State eval((Command)`<FunCall funCall>`, FunEnv fenv, VarEnv venv, State state) {
+	FunDef target = fenv[funCall.id];
+	venv = bind(funCall, target, venv);
+	state = eval(target.body, fenv, venv, state);
 	return state;
 }
 
@@ -96,18 +85,6 @@ public State eval((Command)`penup;`, FunEnv fenv, VarEnv venv, State state) {
 public State eval((Command)`pendown;`, FunEnv fenv, VarEnv venv, State state) {
 	return state.turtle.pendown = true;
 }
-
-State applyRotation(real n, State state) {
-	state.turtle.dir += n;
-	if (state.turtle.dir >= 360) {
-		state.turtle.dir -= 360;
- 	} else {
- 		if  (state.turtle.dir < 0) {
- 			state.turtle.dir += 360;
- 		}
- 	}
- 	return state;
-} 
 
 public State eval((Command)`right <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
@@ -123,7 +100,6 @@ public State eval((Command)`left <Expr e>;`, FunEnv fenv, VarEnv venv, State sta
 	number(n) = eval(e, venv);
 	return applyRotation(-n, state);
 }
-
 
 public State eval((Command)`forward <Expr e>;`, FunEnv fenv, VarEnv venv, State state) {
 	number(n) = eval(e, venv);
@@ -147,7 +123,11 @@ public State eval((Command)`<FunDef f>`, FunEnv fenv, VarEnv venv, State state) 
 	return state;
 }
 
-public State eval((Block)`[<Command* cmds>]`, FunEnv fenv, VarEnv venv, State state) {
+public State eval((Block)`[<Commands commands>]`, FunEnv fenv, VarEnv venv, State state) {
+	return eval(commands, fenv, venv, state);
+}
+
+public State eval((Commands) `<Command* cmds>`, FunEnv fenv, VarEnv venv, State state) {
 	for (Command c <- cmds) {
 		state = eval(c, fenv, venv, state);
 	};
@@ -171,11 +151,22 @@ State applyMovement(real distance, State state) {
 	return state;
 }
 
+State applyRotation(real n, State state) {
+	state.turtle.dir += n;
+	if (state.turtle.dir >= 360) {
+		state.turtle.dir -= 360;
+ 	} else {
+ 		if  (state.turtle.dir < 0) {
+ 			state.turtle.dir += 360;
+ 		}
+ 	}
+ 	return state;
+} 
 
-//TODO
-//default public State evalCommand(Command c, FunEnv fenv, VarEnv venv, State state) {
-	//throw "Could not evaluate command: <c>";
-//}
+VarEnv bind(call:(FunCall)`<FunId id> <Expr* exprs>;`, FunDef target, VarEnv venv) {
+	return venv + ( p: eval(e, venv)  | <p, e> <- zip([p | p<-target.params], [e|e<-call.exprs]));
+}
+
 
 //Eval Expr
 public Value eval((Expr)`<VarId x>`, VarEnv venv)
@@ -199,13 +190,6 @@ public Value eval((Expr)`<Expr lhs> - <Expr rhs>`, VarEnv venv)
 public Value eval((Expr)`<Expr lhs> + <Expr rhs>`, VarEnv venv)
 	= applyArithmatic(lhs, rhs, venv, real(real x, real y) { return x + y; });
 
-Value applyArithmatic(Expr lhs, Expr rhs, VarEnv venv, real(real,real) cmd)
-	= number(cmd(x,y))
-		when
-		number(x) := eval(lhs, venv),
-		number(y) := eval(rhs, venv);
-		
-
 public Value eval((Expr)`<Expr lhs> \< <Expr rhs>`, VarEnv venv)
 	= applyComparison(lhs, rhs, venv, bool(real x, real y) {return x < y;});
 
@@ -214,16 +198,9 @@ public Value eval((Expr)`<Expr lhs> \> <Expr rhs>`, VarEnv venv)
 		
 public Value eval((Expr)`<Expr lhs> \<= <Expr rhs>`, VarEnv venv) 
 	= applyComparison(lhs, rhs, venv, bool(real x, real y) {return x <= y;});
-
 		
 public Value eval((Expr)`<Expr lhs> \>= <Expr rhs>`, VarEnv venv)
 	= applyComparison(lhs, rhs, venv, bool(real x, real y) {return x >= y;});
-
-Value applyComparison(Expr lhs, Expr rhs, VarEnv venv, bool(real,real) cmd)
-	= boolean(cmd(x,y))
-		when
-		number(x) := eval(lhs, venv),
-		number(y) := eval(rhs, venv);
 		
 public Value eval((Expr)`<Expr lhs> = <Expr rhs>`, VarEnv venv)
     = boolean(eval(lhs, venv) == eval(rhs, venv));
@@ -242,6 +219,18 @@ public Value eval((Expr)`<Expr lhs> || <Expr rhs>`, VarEnv venv)
     when
 		boolean(x) := eval(lhs, venv),
 		boolean(y) := eval(rhs, venv);
+		
+Value applyArithmatic(Expr lhs, Expr rhs, VarEnv venv, real(real,real) cmd)
+	= number(cmd(x,y))
+		when
+		number(x) := eval(lhs, venv),
+		number(y) := eval(rhs, venv);
+		
+Value applyComparison(Expr lhs, Expr rhs, VarEnv venv, bool(real,real) cmd)
+	= boolean(cmd(x,y))
+		when
+		number(x) := eval(lhs, venv),
+		number(y) := eval(rhs, venv);
 		
 public default Value eval((Expr)`<Expr e>`, VarEnv _) {
 	throw "Could not eval expr: <e>";

@@ -40,7 +40,7 @@ Bonus:
 
 */
 
-start syntax Program = Command*;
+start syntax Program = Commands;
 
 keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"
@@ -49,9 +49,8 @@ keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 
 lexical Boolean = "true" | "false";
 
-lexical Number = "-"? [0-9]+ Decimal?
-			   | "-"? Decimal
-               ;
+lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
+
 lexical Decimal = "." [0-9]+;
 
 
@@ -90,12 +89,14 @@ syntax Command =
 				 | "while" Expr Block
 				 | "repeat" Expr Block
 /*Procedures*/	 | FunDef
-				 | call : FunId Expr* ";"
+				 | FunCall
 				 ;
 
-syntax FunDef = "to" FunId id VarId* params Command* body "end";
+syntax Commands = Command*;
+syntax FunCall = FunId id Expr* exprs ";";
+syntax FunDef = "to" FunId id VarId* params Commands body "end";
 
-syntax Block = "[" Command* commands "]";
+syntax Block = "[" Commands commands "]";
 
 
 lexical VarId = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
