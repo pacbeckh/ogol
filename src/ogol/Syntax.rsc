@@ -89,11 +89,13 @@ syntax Command =
 				 | "ifelse" Expr Block Block
 				 | "while" Expr Block
 				 | "repeat" Expr Block
-/*Procedures*/	 | "to" FunId VarId* Command* "end"
+/*Procedures*/	 | FunDef
 				 | call : FunId Expr* ";"
 				 ;
 
-syntax Block = "[" Command* "]";
+syntax FunDef = "to" FunId id VarId* params Command* body "end";
+
+syntax Block = "[" Command* commands "]";
 
 
 lexical VarId = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];

@@ -1,6 +1,6 @@
 module ogol::Canvas
 
-alias Point = tuple[int x, int y];
+alias Point = tuple[real x, real y];
 
 alias Canvas = list[Shape];
 
