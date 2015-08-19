@@ -31,8 +31,8 @@ Expressions
  * Logical: &&, ||
 
 Reserved keywords
- if, ifelse, while, repeat, forward, back, right, left, pendown,
- penup, to, true, false, end
+ if, ifelse, while, repeat, forward, back, right, left, pendown, 
+ penup, to, true, false, end, home
 
 Bonus:
  - add literal for colors
@@ -52,7 +52,6 @@ lexical Boolean = "true" | "false";
 lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
 
 lexical Decimal = "." [0-9]+;
-
 
 syntax Expr = VarId
 			| Number
@@ -97,7 +96,6 @@ syntax FunCall = FunId id Expr* exprs ";";
 syntax FunDef = "to" FunId id VarId* params Commands body "end";
 
 syntax Block = "[" Commands commands "]";
-
 
 lexical VarId = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
 lexical FunId = ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9] ;
