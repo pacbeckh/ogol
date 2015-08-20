@@ -136,6 +136,9 @@ test bool evalHome() = evalCommand((Command)`home;`, (), (), baseState(0.0,false
 test bool evalIfElse1() = evalCommand((Command)`ifelse true [forward 100;] [ back 100;]` , (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,100.0>>, []>;
 test bool evalIfElse2() = evalCommand((Command)`ifelse false [forward 100;] [ back 100;]` , (), (), baseState(0.0,false, <0.0,0.0>, [])) == <<0.0,false,<0.0,-100.0>>, []>;
 
+test bool evalFile1() {evalProgram(parse(#start[Program], readFile(|project://Ogol/input/test.ogol|)).top); return true;}
+test bool evalFile1() {evalProgram(parse(#start[Program], readFile(|project://Ogol/input/trees.ogol|)).top); return true;}
+test bool evalFile2() {evalProgram(parse(#start[Program], readFile(|project://Ogol/input/octagon.ogol|)).top); return true;}
 
 
 	
