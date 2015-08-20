@@ -12,7 +12,7 @@ alias Calls = Graph[str];
 alias FunctionDefinitions = lrel[str functionName, str scopeName]; // Function definitions
 
 public Result callAnalysis() {
-    Program p = parse(#start[Program], |project://Ogol/input/dashed.ogol|).top;
+    Program p = parse(#start[Program], |project://Ogol/input/octagon.ogol|).top;
     result = analyzeCommands("global", p.commands, <{}, {}>, []);
 
 	println("-------------------------------------------------");
@@ -54,11 +54,10 @@ Result analyzeCommand(str scopeName, (Command) `to <FunId fid> <VarId* args> <Co
 Result analyzeCommand(str scopeName, (Command)`<FunCall funCall>`, Result result, FunctionDefinitions defs) {
 	list[str] possibleScopes = defs["<funCall.id>"];
 	
-	//TODO
-	if(size(possibleScopes) > 0) {
-		result.calls = result.calls + <scopeName, "<possibleScopes[0]>/<funCall.id>">;
-	} else {
+	if(isEmpty(possibleScopes)) {
 		result.calls = result.calls + <scopeName, "***undefined:<funCall.id>***">;
+	} else {
+		result.calls = result.calls + <scopeName, "<possibleScopes[0]>/<funCall.id>">;
 	}
 	return result;
 }
