@@ -33,7 +33,6 @@ public set[str] canBeReached(Calls calls, str from) = (calls+)[from];
 Result analyzeCommands(str scopeName, Command* commands, Result result, FunctionDefinitions defs) {
 	newDefs = [*getDefinition(scopeName, cmd) | cmd <- commands ];
 	defs = newDefs + defs;
-	
 	result.allDefs +=  {"<scope>/<name>" | <name, scope> <- newDefs};
 	
 	for(cmd <- commands){

@@ -36,6 +36,9 @@ test bool evalNumber1() = eval((Expr)`1`, ()) == number(1.);
 test bool evalBool1() = eval((Expr)`true`, ()) == boolean(true);
 test bool evalBool2() = eval((Expr)`false`, ()) == boolean(false);
 
+// Parentheses
+test bool testParentheses() = eval((Expr)`(1)`, ()) == number(1.);
+
 // Arithmatic
 test bool evalDivision1() = eval((Expr)`4 / 2`, ()) == number(2.);
 test bool evalDivision2() = eval((Expr)`4 / :q`, ((VarId)`:q` : number(5.0))) == number(0.8);

@@ -54,6 +54,7 @@ lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
 syntax Expr = VarId
 			| Number
 			| Boolean
+			| "(" Expr ")"
 			| left Expr "/" Expr
 			> left Expr "*" Expr
 			> left (

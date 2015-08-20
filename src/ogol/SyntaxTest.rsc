@@ -57,6 +57,7 @@ test bool numberNeg3() = !canParse(#Number, "-");
 
 //Expr
 //  Arithmatic
+test bool arithmatic1() = canParse(#Expr, "(1)");
 test bool arithmatic1() = canParse(#Expr, "1+1");
 test bool arithmatic2() = canParse(#Expr, "1 + 1");
 test bool arithmatic3() = canParse(#Expr, "1 + 2");
