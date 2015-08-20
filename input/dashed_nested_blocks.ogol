@@ -1,7 +1,11 @@
 to squareDash :n :len
    if :n < 5 [
 	   to dash :n :len
-	      repeat :n [ pd; fd :len; pu; fd :len; ]
+	      repeat :n [ pd; fd :len; pu; fd :len; 
+	      	to deeplyNestedFun :n
+	      		fd :n;
+	      	end
+	      ]
 	      bk :len;
 	      pd ;
 	   end
