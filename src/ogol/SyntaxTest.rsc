@@ -49,12 +49,10 @@ test bool number5() = canParse(#Number, "-.1");
 test bool number5() = canParse(#Number, "-2.1");
 test bool number6() = canParse(#Number, "0");
 test bool number7() = canParse(#Number, ".1");
-test bool number8() = canParse(#Number, "11111");
 
 test bool numberNeg1() = !canParse(#Number, "0.");
 test bool numberNeg2() = !canParse(#Number, "");
 test bool numberNeg3() = !canParse(#Number, "-");
-test bool numberNeg4() = !canParse(#Number, ".");
 
 
 //Expr
