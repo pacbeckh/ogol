@@ -7,3 +7,5 @@ end
 to squareDash :n :len
    repeat 4 [ dash :n :len; rt 90; ]
 end
+
+repeat 60 [repeat 360 [forward 1; left 1;] left 10;]

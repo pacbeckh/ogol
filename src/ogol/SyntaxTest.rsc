@@ -201,6 +201,7 @@ test bool callNeg3() = !canParse(#Command, "_foo 1;");
 test bool callNeg4() = !canParse(#Command, "to 1;");
 
 
+test bool canParseBig() = canParse(#Program, "to foo :x :y forward :x; right :y; forward 100; end foo 50 100;");
 //Files
 test bool file1() = canParseFile(|project://Ogol/input/dashed.ogol|);
 test bool file2() = canParseFile(|project://Ogol/input/octagon.ogol|);
@@ -209,7 +210,7 @@ test bool file4() = canParseFile(|project://Ogol/input/trees.ogol|);
 
 test bool fileNeg1() = !canParseFile(|project://Ogol/input/pumpkin.ogol|);
 
-public void demo() = renderParsetree(parse(#Expr, "-2.1.1"));
+public void demo() = renderParsetree(parse(#Program, "to foo :x :y forward :x; right :y; forward 100; end foo 50 100;"));
 
 
 

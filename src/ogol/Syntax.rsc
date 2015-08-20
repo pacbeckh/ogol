@@ -31,8 +31,8 @@ Expressions
  * Logical: &&, ||
 
 Reserved keywords
- if, ifelse, while, repeat, forward, back, right, left, pendown,
- penup, to, true, false, end
+ if, ifelse, while, repeat, forward, back, right, left, pendown, 
+ penup, to, true, false, end, home
 
 Bonus:
  - add literal for colors
@@ -40,7 +40,7 @@ Bonus:
 
 */
 
-start syntax Program = Command*;
+start syntax Program = Commands;
 
 keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"
@@ -49,11 +49,9 @@ keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 
 lexical Boolean = "true" | "false";
 
-lexical Number = "-"? [0-9]+ Decimal?
-			   | "-"? Decimal
-               ;
-lexical Decimal = "." [0-9]+;
+lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
 
+lexical Decimal = "." [0-9]+;
 
 syntax Expr = VarId
 			| Number
@@ -89,12 +87,15 @@ syntax Command =
 				 | "ifelse" Expr Block Block
 				 | "while" Expr Block
 				 | "repeat" Expr Block
-/*Procedures*/	 | "to" FunId VarId* Command* "end"
-				 | call : FunId Expr* ";"
+/*Procedures*/	 | FunDef
+				 | FunCall
 				 ;
 
-syntax Block = "[" Command* "]";
+syntax Commands = Command*;
+syntax FunCall = FunId id Expr* exprs ";";
+syntax FunDef = "to" FunId id VarId* params Commands body "end";
 
+syntax Block = "[" Commands commands "]";
 
 lexical VarId = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
 lexical FunId = ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9] ;
