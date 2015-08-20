@@ -19,9 +19,11 @@ public Result callAnalysis() {
 	println("Analysis:\n");
 	    
     println("Unused functions: <result.allDefs - canBeReached(result.calls, "global")>");
-    for(str def <- result.allDefs){ 
-    	println("<def> -\> <canBeReached(result.calls, def)>");
-    }
+    println("-------------------------------------------------");
+    print("<for(str def <- result.allDefs){>From <def> we can reach:
+    		'<for(str target <- canBeReached(result.calls, def)){>  - <target>
+    		'<}>
+			'<}>");
     
     println("\n-------------------------------------------------");    
     return result;
@@ -31,6 +33,7 @@ public set[str] canBeReached(Calls calls, str from) = (calls+)[from];
 
 
 Result analyzeCommands(str scopeName, Command* commands, Result result, FunctionDefinitions defs) {
+	
 	newDefs = [*getDefinition(scopeName, cmd) | cmd <- commands ];
 	defs = newDefs + defs;
 	result.allDefs +=  {"<scope>/<name>" | <name, scope> <- newDefs};

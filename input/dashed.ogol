@@ -7,8 +7,8 @@ end
 
 to squareDash :n :len
    repeat 4 [
-   	to bar foo; end
-   	to foo bar; end
+   	to bar bar; end
+   	
     dash :n :len; rt 90; 
     ]
 end
