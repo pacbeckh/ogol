@@ -188,10 +188,13 @@ public Value eval((Expr)`<VarId x>`, VarEnv venv)
 	
 public Value eval((Expr)`<Number n>`, VarEnv venv)
 	= number(toReal("<n>"));
-
+	
 public Value eval((Expr)`<Boolean b>`, VarEnv venv)
 	= boolean("<b>" == "true");
-	
+
+public Value eval((Expr)`(<Expr e>)`, VarEnv venv)
+	= eval(e, venv);
+		
 public Value eval((Expr)`<Expr lhs> / <Expr rhs>`, VarEnv venv)
 	= applyArithmatic(lhs, rhs, venv, real(real x, real y) { return x / y; });
 
