@@ -245,11 +245,14 @@ Value applyArithmatic(Expr lhs, Expr rhs, VarEnv venv, real(real,real) cmd) {
 	};
 }
 		
-Value applyComparison(Expr lhs, Expr rhs, VarEnv venv, bool(real,real) cmd)
-	= boolean(cmd(x,y))
-		when
-		number(x) := eval(lhs, venv),
-		number(y) := eval(rhs, venv);
+Value applyComparison(Expr lhs, Expr rhs, VarEnv venv, bool(real,real) cmd) {
+	switch(<eval(lhs, venv), eval(rhs,venv)>) {
+		case <number(x), number(y)>: 
+			return boolean(cmd(x,y));
+		default:
+			throw "Could not apply comparison on sides: <rhs> <lhs>";
+	};
+}
 		
 public default Value eval((Expr)`<Expr e>`, VarEnv _) {
 	throw "Could not eval expr: <e>";
