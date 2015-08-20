@@ -41,11 +41,12 @@ alias Turtle = tuple[real dir, bool pendown, Point position];
 alias State = tuple[Turtle turtle, Canvas canvas];
 
 // Top-level eval function
-public Canvas evalProgram(p:(Program)`<Commands cmds>`) {
+public Canvas evalProgram(p:(Program)`<Command* cmds>`) {
 	p = desugar(p);
 	funenv = collectFunDefs(p);
-	println(unparse(p));
-	state = evalCommand(cmds, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
+	
+	state = evalCommands(p.commands, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
+	
 	return state.canvas;
 }
 
@@ -68,6 +69,7 @@ public Program desugar(Program p) {
 	}
 }
 
+//TODO: Error on duplicates?
 FunEnv collectFunDefs(Program p) {
 	return (f.id : f | /FunDef f := p);
 }
@@ -133,11 +135,11 @@ public State evalCommand((Command)`<FunDef f>`, FunEnv fenv, VarEnv venv, State 
 	return state;
 }
 
-public State evalCommand((Block)`[<Commands commands>]`, FunEnv fenv, VarEnv venv, State state) {
-	return evalCommand(commands, fenv, venv, state);
+public State evalCommand((Block)`[<Command* commands>]`, FunEnv fenv, VarEnv venv, State state) {
+	return evalCommands(commands, fenv, venv, state);
 }
 
-public State evalCommand((Commands) `<Command* cmds>`, FunEnv fenv, VarEnv venv, State state) {
+public State evalCommands(cmds, FunEnv fenv, VarEnv venv, State state) {
 	for (Command c <- cmds) {
 		state = evalCommand(c, fenv, venv, state);
 	};
@@ -234,11 +236,14 @@ public Value eval((Expr)`<Expr lhs> || <Expr rhs>`, VarEnv venv)
 		boolean(x) := eval(lhs, venv),
 		boolean(y) := eval(rhs, venv);
 		
-Value applyArithmatic(Expr lhs, Expr rhs, VarEnv venv, real(real,real) cmd)
-	= number(cmd(x,y))
-		when
-		number(x) := eval(lhs, venv),
-		number(y) := eval(rhs, venv);
+Value applyArithmatic(Expr lhs, Expr rhs, VarEnv venv, real(real,real) cmd) {
+	switch(<eval(lhs, venv), eval(rhs,venv)>) {
+		case <number(x), number(y)>: 
+			return number(cmd(x,y));
+		default:
+			throw "Could not apply arithmatic on sides: <rhs> <lhs>";
+	};
+}
 		
 Value applyComparison(Expr lhs, Expr rhs, VarEnv venv, bool(real,real) cmd)
 	= boolean(cmd(x,y))

@@ -40,7 +40,7 @@ Bonus:
 
 */
 
-start syntax Program = Commands;
+start syntax Program = Command* commands;
 
 keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"
@@ -50,8 +50,6 @@ keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 lexical Boolean = "true" | "false";
 
 lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
-
-lexical Decimal = "." [0-9]+;
 
 syntax Expr = VarId
 			| Number
@@ -91,11 +89,10 @@ syntax Command =
 				 | FunCall
 				 ;
 
-syntax Commands = Command*;
 syntax FunCall = FunId id Expr* exprs ";";
-syntax FunDef = "to" FunId id VarId* params Commands body "end";
+syntax FunDef = "to" FunId id VarId* params Command* body "end";
 
-syntax Block = "[" Commands commands "]";
+syntax Block = "[" Command* commands "]";
 
 lexical VarId = ":" ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9];
 lexical FunId = ([a-zA-Z][a-zA-Z0-9]*) \Reserved !>> [a-zA-Z0-9] ;
@@ -113,5 +110,5 @@ lexical Whitespace
   ;
 
 lexical Comment
-  = @category="Comment" "--" ![\n\r]* $
+  = @category="Comment" "--" ![\n\r]*$
   ;
