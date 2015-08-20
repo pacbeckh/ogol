@@ -59,9 +59,8 @@ Result definitionsInCommand(str scopeName, (Command)`<FunCall funCall>`, Result 
 	return result; 
 }
 
-Result definitionsInCommand(str scopeName, (Command)`repeat <Expr e> <Block b>`, Result result) {
-	return definitionsInCommands("<scopeName>", b.commands, result);
-}
+Result definitionsInCommand(str scopeName, (Command)`repeat <Expr e> <Block b>`, Result result) 
+	= definitionsInCommands("<scopeName>", b.commands, result);
 
 Result definitionsInCommand(str scopeName, (Command)`ifelse <Expr e> <Block i> <Block j>`, Result result) {
 	result = definitionsInCommands("<scopeName>", i.commands, result);
@@ -69,7 +68,6 @@ Result definitionsInCommand(str scopeName, (Command)`ifelse <Expr e> <Block i> <
 }
 
 
-default Result definitionsInCommand(str scopeName, Command command, Result result) {
-	return result;
-}
+default Result definitionsInCommand(str scopeName, Command command, Result result) 
+	= result;
 
