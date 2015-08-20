@@ -4,16 +4,16 @@ import ogol::Syntax;
 import ParseTree;
 import IO;
 import analysis::graphs::Graph;
+import Set;
 
-
-alias Result = tuple[Calls calls, FunctionDefinitions defs, set[str] allDefs];
+alias Result = tuple[Calls calls, set[str] allDefs];
 alias Calls = Graph[str];
 
 alias FunctionDefinitions = lrel[str functionName, str scopeName]; // Function definitions
 
 public Result callAnalysis() {
     Program p = parse(#start[Program], |project://Ogol/input/dashed.ogol|).top;
-    result = definitionsInCommands("global", p.commands, <{},[], {}>);
+    result = analyzeCommands("global", p.commands, <{}, {}>, []);
 
 	println("-------------------------------------------------");
 	println("Analysis:\n");
@@ -30,44 +30,48 @@ public Result callAnalysis() {
 public set[str] canBeReached(Calls calls, str from) = (calls+)[from];
 
 
-Result definitionsInCommands(str scopeName, Command* commands, Result result) {
-	x = result.defs;
+Result analyzeCommands(str scopeName, Command* commands, Result result, FunctionDefinitions defs) {
+	newDefs = [*getDefinition(scopeName, cmd) | cmd <- commands ];
+	defs = newDefs + defs;
+	
+	result.allDefs +=  {"<scope>/<name>" | <name, scope> <- newDefs};
 	
 	for(cmd <- commands){
-		result = definitionsInCommand(scopeName, cmd, result);
+		result = analyzeCommand(scopeName, cmd, result, defs);
 	}
-	return <result.calls, x, result.allDefs>;
+	return result;
 }
 
-Result definitionsInCommand(str scopeName, (Command) `to <FunId fid> <VarId* args> <Command* commands> end`, Result result) {
-	defs = result.defs + <"<fid>", scopeName>;
-	
-	result = definitionsInCommands("<scopeName>/<fid>", commands, <result.calls, defs, result.allDefs>);
-	return <result.calls, defs, result.allDefs + "<scopeName>/<fid>" >;
-}
+FunctionDefinitions getDefinition(str scopeName, (Command) `to <FunId fid> <VarId* args> <Command* commands> end`)
+	= [<"<fid>", scopeName>];
 
-Result definitionsInCommand(str scopeName, (Command)`<FunCall funCall>`, Result result) {
-	list[str] possibleScopes = result.defs["<funCall.id>"];
+default FunctionDefinitions getDefinition(str scopeName, Command command)
+	= [];
+
+Result analyzeCommand(str scopeName, (Command) `to <FunId fid> <VarId* args> <Command* commands> end`, Result result, FunctionDefinitions defs)
+	= analyzeCommands("<scopeName>/<fid>", commands, result, defs);
+
+Result analyzeCommand(str scopeName, (Command)`<FunCall funCall>`, Result result, FunctionDefinitions defs) {
+	list[str] possibleScopes = defs["<funCall.id>"];
 	
+	//TODO
 	if(size(possibleScopes) > 0) {
 		result.calls = result.calls + <scopeName, "<possibleScopes[0]>/<funCall.id>">;
 	} else {
-		println("NoSuchMethodException <funCall.id>");	
-		println(result.defs);
+		result.calls = result.calls + <scopeName, "***undefined:<funCall.id>***">;
 	}
-	
-	return result; 
+	return result;
 }
 
-Result definitionsInCommand(str scopeName, (Command)`repeat <Expr e> <Block b>`, Result result) 
-	= definitionsInCommands("<scopeName>", b.commands, result);
+Result analyzeCommand(str scopeName, (Command)`repeat <Expr e> <Block b>`, Result result, FunctionDefinitions defs) 
+	= analyzeCommands("<scopeName>", b.commands, result, defs);
 
-Result definitionsInCommand(str scopeName, (Command)`ifelse <Expr e> <Block i> <Block j>`, Result result) {
-	result = definitionsInCommands("<scopeName>", i.commands, result);
-	return definitionsInCommands("<scopeName>", j.commands, result);
+Result analyzeCommand(str scopeName, (Command)`ifelse <Expr e> <Block i> <Block j>`, Result result, FunctionDefinitions defs) {
+	result = analyzeCommands("<scopeName>", i.commands, result, defs);
+	return analyzeCommands("<scopeName>", j.commands, result, defs);
 }
 
 
-default Result definitionsInCommand(str scopeName, Command command, Result result) 
+default Result analyzeCommand(str scopeName, Command command, Result result, FunctionDefinitions defs) 
 	= result;
 

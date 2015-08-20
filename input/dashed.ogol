@@ -1,6 +1,7 @@
 to dash :n :len
    repeat :n [ pd; fd :len; pu; fd :len; ]
    bk :len;
+   hello 50;
    pd ;
 end
 
