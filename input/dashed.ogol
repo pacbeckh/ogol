@@ -5,7 +5,13 @@ to dash :n :len
 end
 
 to squareDash :n :len
-   repeat 4 [ dash :n :len; rt 90; ]
+   repeat 4 [
+   	to bar foo; end
+   	to foo bar; end
+    dash :n :len; rt 90; 
+    ]
 end
 
 repeat 60 [repeat 360 [forward 1; left 1;] left 10;]
+ifelse true [dash 1 5;][squareDash 4 8;]
+dash 10 20;
