@@ -51,8 +51,6 @@ lexical Boolean = "true" | "false";
 
 lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
 
-lexical Decimal = "." [0-9]+;
-
 syntax Expr = VarId
 			| Number
 			| Boolean
