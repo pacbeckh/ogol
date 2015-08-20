@@ -40,7 +40,7 @@ Bonus:
 
 */
 
-start syntax Program = Commands;
+start syntax Program = Commands commands;
 
 keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"

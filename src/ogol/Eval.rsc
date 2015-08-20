@@ -44,8 +44,9 @@ alias State = tuple[Turtle turtle, Canvas canvas];
 public Canvas evalProgram(p:(Program)`<Commands cmds>`) {
 	p = desugar(p);
 	funenv = collectFunDefs(p);
-	println(unparse(p));
-	state = evalCommand(cmds, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
+	
+	state = evalCommand(p.commands, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
+	
 	return state.canvas;
 }
 
