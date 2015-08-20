@@ -12,8 +12,8 @@ alias Calls = Graph[str];
 alias FunctionDefinitions = lrel[str functionName, str scopeName]; // Function definitions
 
 public Result callAnalysis() {
-    Program p = parse(#start[Program], |project://Ogol/input/octagon.ogol|).top;
-    result = analyzeCommands("global", p.commands, <{}, {}>, []);
+    Program p = parse(#start[Program], |project://Ogol/input/dashed.ogol|).top;
+    result = analyzeCommands("global", p.commands, <{}, {"global"}>, []);
 
 	println("-------------------------------------------------");
 	println("Analysis:\n");
