@@ -76,9 +76,8 @@ FunEnv collectFunDefs(Program p) {
 
 public State evalCommand((Command)`<FunCall funCall>`, FunEnv fenv, VarEnv venv, State state) {
 	FunDef target = fenv[funCall.id];
-	venv = bind(funCall, target, venv);
-	state = evalCommand(target.body, fenv, venv, state);
-	return state;
+	venv += bind(funCall, target);
+	return evalCommand(target.body, fenv, venv, state);
 }
 
 //Eval Command
@@ -179,9 +178,8 @@ State applyRotation(real n, State state) {
  	return state;
 } 
 
-VarEnv bind(call:(FunCall)`<FunId id> <Expr* exprs>;`, FunDef target, VarEnv venv) {
-	return venv + ( p: eval(e, venv)  | <p, e> <- zip([p | p<-target.params], [e|e<-call.exprs]));
-}
+VarEnv bind(call:(FunCall)`<FunId id> <Expr* exprs>;`, FunDef target)
+  = ( p: eval(e, venv)  | <p, e> <- zip([p | p<-target.params], [e|e<-call.exprs]));
 
 
 //Eval Expr
