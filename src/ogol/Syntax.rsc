@@ -44,12 +44,15 @@ start syntax Program = Command* commands;
 
 keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"
-					| "pendown" | "pd" | "penup" | "pu" | "home"
+					| "pendown" | "pd" | "penup" | "pu" | "home" | "setpencolor"
 					| "to" | "true" | "false" | "end";
 
 lexical Boolean = "true" | "false";
 
 lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
+
+lexical RGB = "#" Hex Hex Hex Hex Hex Hex;
+lexical Hex = [0-9a-zA-Z];
 
 syntax Expr = VarId
 			| Number
@@ -82,6 +85,7 @@ syntax Command =
 				 | ("penup" | "pu") ";"
 				 | ("pendown" | "pd") ";"
 				 | "home" ";"
+				 | "setpencolor" RGB ";"
 /*Control flow*/ | "if" Expr Block
 				 | "ifelse" Expr Block Block
 				 | "while" Expr Block
@@ -111,5 +115,5 @@ lexical Whitespace
   ;
 
 lexical Comment
-  = @category="Comment" "--" ![\n\r]*$
+  = @category="Comment" "--" ![\n\r]* $
   ;

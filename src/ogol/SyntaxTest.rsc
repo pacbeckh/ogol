@@ -55,6 +55,10 @@ test bool numberNeg2() = !canParse(#Number, "");
 test bool numberNeg3() = !canParse(#Number, "-");
 
 
+test bool color1() = canParse(#RGB, "#000000");
+test bool color2() = canParse(#RGB, "#0AA0a0");
+test bool colorNeg1() = !canParse(#RGB, "#0AA");
+
 //Expr
 //  Arithmatic
 test bool arithmatic1() = canParse(#Expr, "(1)");
@@ -120,11 +124,13 @@ test bool drawing11() = canParse(#Command, "pendown;");
 test bool drawing12() = canParse(#Command, "pd;");
 test bool drawing13() = canParse(#Command, "home;");
 test bool drawing14() = canParse(#Command, "fd :t;");
+test bool drawing15() = canParse(#Command, "setpencolor #121212;");
 
 test bool drawingNeg1() = !canParse(#Command, "lt 50");
 test bool drawingNeg2() = !canParse(#Command, "left");
 test bool drawingNeg3() = !canParse(#Command, "home left;");
 test bool drawingNeg4() = !canParse(#Command, "home 1;");
+test bool drawingNeg5() = !canParse(#Command, "setpencolor 1;");
 
 
 //Command
@@ -211,7 +217,7 @@ test bool file4() = canParseFile(|project://Ogol/input/trees.ogol|);
 
 test bool fileNeg1() = !canParseFile(|project://Ogol/input/pumpkin.ogol|);
 
-public void demo() = renderParsetree(parse(#Program, "to foo :x :y forward :x; right :y; forward 100; end foo 50 100;"));
+public void demo() = renderParsetree(parse(#Command, "setpencolor #121212;"));
 
 
 

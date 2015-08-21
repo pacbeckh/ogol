@@ -13,7 +13,6 @@ alias FunEnv = map[FunId id, FunDef def];
 
 alias VarEnv = map[VarId id, Value val];
 
-
 data Value
   = boolean(bool b)
   | number(real i)
@@ -33,10 +32,7 @@ data Value
 NB: home = (0, 0)
 */
 
-
-
-
-alias Turtle = tuple[real dir, bool pendown, Point position];
+alias Turtle = tuple[real dir, bool pendown, str pencolor, Point position];
 
 alias State = tuple[Turtle turtle, Canvas canvas];
 
@@ -45,7 +41,7 @@ public Canvas evalProgram(p:(Program)`<Command* cmds>`) {
 	p = desugar(p);
 	funenv = collectFunDefs(p);
 	
-	state = evalCommands(p.commands, funenv, (), <<0.0, true,  <0.0,0.0>>,[]>);
+	state = evalCommands(p.commands, funenv, (), <<0.0, true, "#000000", <0.0,0.0>>,[]>);
 	
 	return state.canvas;
 }
@@ -117,6 +113,10 @@ public State evalCommand((Command)`home;`, FunEnv fenv, VarEnv venv, State state
 	return state.turtle.position = <0.0,0.0>;
 }
 
+public State evalCommand((Command)`setpencolor <RGB c>;`, FunEnv fenv, VarEnv venv, State state) {
+	return state.turtle.pencolor = "<c>";
+}
+
 public State evalCommand((Command)`ifelse <Expr e> <Block i> <Block j>`, FunEnv fenv, VarEnv venv, State state) {
 	boolean(b) = eval(e, venv);
 	return b ? evalCommand(i, fenv, venv, state) : evalCommand(j, fenv, venv, state);
@@ -161,7 +161,7 @@ State applyMovement(real distance, State state) {
 	
 	if (state.turtle.pendown) {
 		Point to = state.turtle.position;
-		state.canvas = state.canvas + line(from, to);
+		state.canvas = state.canvas + line(from, to, state.turtle.pencolor);
 	}
 	return state;
 }
@@ -191,7 +191,7 @@ public Value eval((Expr)`<Number n>`, VarEnv venv)
 	
 public Value eval((Expr)`<Boolean b>`, VarEnv venv)
 	= boolean("<b>" == "true");
-
+	
 public Value eval((Expr)`(<Expr e>)`, VarEnv venv)
 	= eval(e, venv);
 		
