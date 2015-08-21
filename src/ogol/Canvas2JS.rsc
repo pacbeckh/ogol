@@ -3,8 +3,8 @@ module ogol::Canvas2JS
 import ogol::Canvas;
 import IO;
 
-int CANVAS_WIDTH = 500;
-int CANVAS_HEIGHT = 500;
+int CANVAS_WIDTH = 1000;
+int CANVAS_HEIGHT = 1000;
 
 
 void compileCanvas(Canvas cv, loc l) {

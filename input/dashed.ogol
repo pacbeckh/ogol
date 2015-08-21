@@ -1,18 +1,19 @@
 to dash :n :len
    repeat :n [ pd; fd :len; pu; fd :len; ]
    bk :len;
-   hello 50;
    pd ;
 end
 
 to squareDash :n :len
    repeat 4 [
-   	to bar bar; end
-   	
+   	ifelse random [setpencolor #ff0000;] [setpencolor #0000ff;]
     dash :n :len; rt 90; 
     ]
 end
 
-repeat 60 [repeat 360 [forward 1; left 1;] left 10;]
-ifelse true [dash 1 5;][squareDash 4 8;]
-dash 10 20;
+repeat 60 [
+	ifelse random [setpencolor #00ff00;] [setpencolor #009999;]
+	repeat 360 [forward 5; left 1;] left 10;
+]
+
+squareDash 10 20;
