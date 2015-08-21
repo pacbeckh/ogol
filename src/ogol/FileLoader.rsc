@@ -11,14 +11,9 @@ import vis::Render;
 import ogol::Canvas2JS;
 
 public void main(list[str] args) {
-	str fileContent = readFile(|project://Ogol/input/octagon.ogol|);
+	str fileContent = readFile(|project://Ogol/input/dashed.ogol|);
 	
-	Tree tree = parse(#start[Program], fileContent);
-	visit (tree) {
-		case /Program p : {
-			result = evalProgram(p);
-			writeFile(|project://Ogol/input/octagon.out.js|, canvas2js(result));
-			return;
-		} 
-	}
+	Program program = parse(#start[Program], fileContent).top;
+	result = evalProgram(program);
+	writeFile(|project://Ogol/input/ogol.js|, canvas2js(result));		
 }

@@ -45,17 +45,19 @@ start syntax Program = Command* commands;
 keyword Reserved = "if" | "ifelse" | "while"| "repeat"
 					| "forward" | "fd" | "back" | "bk" | "right" | "rt" | "left" | "lt"
 					| "pendown" | "pd" | "penup" | "pu" | "home" | "setpencolor"
-					| "to" | "true" | "false" | "end";
+					| "to" | "true" | "false" | "end" | "random";
 
 lexical Boolean = "true" | "false";
 
 lexical Number = "-"? ([0-9]* ".")? [0-9]+ !>> [0-9];
+lexical Random = "random";
 
 lexical RGB = "#" Hex Hex Hex Hex Hex Hex;
 lexical Hex = [0-9a-zA-Z];
 
 syntax Expr = VarId
 			| Number
+			| Random
 			| Boolean
 			| "(" Expr ")"
 			| left Expr "/" Expr

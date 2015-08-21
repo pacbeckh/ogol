@@ -29,6 +29,9 @@ test bool desugarFunction() = testDesugar(
 test bool evalVarId1() = eval((Expr)`:t`, ((VarId)`:t`: number(10.0))) == number(10.0);
 //test bool evalVarIdError() = eval((Expr)`:t`, ((Expr)`:x`: number(10.0)));
 
+// RandomNumber
+test bool evalRandom() {eval((Expr)`random`, ()); return true;}
+
 // Number
 test bool evalNumber1() = eval((Expr)`1`, ()) == number(1.);
 

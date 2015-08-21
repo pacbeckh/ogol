@@ -21,6 +21,7 @@ bool canParseFile(loc l) {
 test bool comment1() = canParse(#Comment, "-- abc");
 
 //Expr
+
 // VarId
 test bool varId1() = canParse(#Expr, ":y");
 test bool varId2() = canParse(#Expr, ":y1");
@@ -28,6 +29,10 @@ test bool varId3() = canParse(#Expr, ":x \> :x");
 test bool varId4() = canParse(#Expr, ":x - :x");
 
 test bool varIdNeg1() = !canParse(#Expr, ":1x");
+
+//Expr
+// Random number
+test bool randomTest() = canParse(#Random, "random");
 
 //Expr
 //  Boolean
@@ -217,7 +222,7 @@ test bool file4() = canParseFile(|project://Ogol/input/trees.ogol|);
 
 test bool fileNeg1() = !canParseFile(|project://Ogol/input/pumpkin.ogol|);
 
-public void demo() = renderParsetree(parse(#Command, "setpencolor #121212;"));
+public void demo() = renderParsetree(parse(#Expr, ":y"));
 
 
 

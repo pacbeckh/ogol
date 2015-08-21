@@ -8,6 +8,7 @@ import util::Math;
 import List;
 import Type;
 import ParseTree;
+import Boolean;
 
 alias FunEnv = map[FunId id, FunDef def];
 
@@ -188,6 +189,9 @@ public Value eval((Expr)`<VarId x>`, VarEnv venv)
 	
 public Value eval((Expr)`<Number n>`, VarEnv venv)
 	= number(toReal("<n>"));
+	
+	public Value eval((Expr)`random`, VarEnv venv)
+	= boolean(arbBool());
 	
 public Value eval((Expr)`<Boolean b>`, VarEnv venv)
 	= boolean("<b>" == "true");
